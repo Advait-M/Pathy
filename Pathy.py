@@ -27,8 +27,13 @@ screen = Canvas(
     width=sWidth,
     height=sHeight,
     background="black")  # Make main game canvas
-size = 6
-space = int(400/size)
+size = 12
+startxb = 150
+startyb = 150
+endxb = 650
+endyb = 650
+boardSize = endxb-startxb
+space = int(boardSize/size)
 dotRad = int((space-20)/2)
 
 def hexadecimalToDecimal(m):
@@ -50,9 +55,18 @@ def hexadecimal():
             a = random.randint(48,70)
         hexadecimals += chr(a)
     ch = False
+    amountDiff = 40
+    amountLow = 40
     for i in range(0, len(coloursd)):
-        if abs(hexadecimalToDecimal(hexadecimals[1:]) - hexadecimalToDecimal(coloursd[i][1:])) < 100000:
+        if abs(hexadecimalToDecimal(hexadecimals[1:3]) - hexadecimalToDecimal(coloursd[i][1:3])) < amountDiff and abs(hexadecimalToDecimal(hexadecimals[3:5]) - hexadecimalToDecimal(coloursd[i][3:5])) < amountDiff and abs(hexadecimalToDecimal(hexadecimals[5:7]) - hexadecimalToDecimal(coloursd[i][5:7])) < amountDiff:
             ch = True
+            #print("redo")
+        elif hexadecimalToDecimal(hexadecimals[1:3]) < amountLow and hexadecimalToDecimal(hexadecimals[1:3]) < amountLow and hexadecimalToDecimal(hexadecimals[1:3]) < amountLow:
+            ch = True
+            #print("redo2")
+    # for i in range(0, len(coloursd)):
+    #     if abs(hexadecimalToDecimal(hexadecimals[1:]) - hexadecimalToDecimal(coloursd[i][1:])) < 100000:
+    #         ch = True
     if ch:
         return hexadecimal()
     else:
@@ -139,9 +153,6 @@ def createPuzzle(n):
         for seci in range(0, len(sols[i])):
             try:
                 if length(sols[firi][seci], sols[firi][seci+1]) != 1:
-                    print(grid)
-                    for w in sols:
-                        print(w)
                     createPuzzle(size)
             except IndexError:
                 pass
@@ -158,7 +169,7 @@ def basicGridOverlay():
 
 def overlay(startx, starty, endx, endy, spacing):
     """Makes a grid overlay."""
-    endi = endy - 400%spacing
+    endi = endy - boardSize%spacing
     for x in range(startx, endx+1, spacing):  # Draw vertical lines
         screen.create_line(x, starty, x, endi, fill="yellow")
 
@@ -173,8 +184,8 @@ def createBoard():
             if grid[sx][sy] != 0 :
                 # print(grid[sx][sy])
                 # print(coloursd)
-                screen.create_oval(200 + sx * space - dotRad + space / 2, 200 + sy * space - dotRad + space / 2,
-                                   200 + sx * space + dotRad + space / 2, 200 + sy * space + dotRad + space / 2,
+                screen.create_oval(startxb + sx * space - dotRad + space / 2, startyb + sy * space - dotRad + space / 2,
+                                   startxb + sx * space + dotRad + space / 2, startyb + sy * space + dotRad + space / 2,
                                    fill=coloursd[(grid[sx][sy]-1)])
 def createSolution():
     global grid, sols, coloursd
@@ -188,8 +199,8 @@ def createSolution():
                     break
                 except ValueError:
                     pass
-            screen.create_oval(200 + sx * space - dotRad + space / 2, 200 + sy * space - dotRad + space / 2,
-                                   200 + sx * space + dotRad + space / 2, 200 + sy * space + dotRad + space / 2,
+            screen.create_oval(startxb + sx * space - dotRad + space / 2, startyb + sy * space - dotRad + space / 2,
+                                   startxb + sx * space + dotRad + space / 2, startyb + sy * space + dotRad + space / 2,
                                    fill=coloursd[i])
 def initialize():
     createPuzzle(size)
@@ -199,8 +210,8 @@ def runGame():
     initialize()
     createBoard()
     #basicGridOverlay()
-    #createSolution()
-    overlay(200, 200, 600, 600, space)
+    createSolution()
+    overlay(startxb, startyb, endxb, endyb, space)
     screen.update()
     # curx = 2
     # cury = 3
